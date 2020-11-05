@@ -68,10 +68,18 @@ public class ChatHudMixin {
     @Shadow
     private long lastMessageAddedTime;
 
+    @Shadow
+    public void addToMessageHistory(String message) {}
+
     @Overwrite
     public void clear(boolean clearHistory) {
-        if (this.messageHistory.size() > 0 && !this.messageHistory.get(this.messageHistory.size() - 1).equals("=================="))
-            this.addMessage(new TranslatableText("=================="));
+        if (this.messageHistory.size() > 0) {
+            System.out.println(this.messageHistory.get(this.messageHistory.size() - 1));
+            if (!this.messageHistory.get(this.messageHistory.size() - 1).equals("==================")) {
+                this.addMessage(new TranslatableText("=================="));
+                this.addToMessageHistory("==================");
+            }
+        }
     }
 
     @Overwrite
@@ -93,14 +101,14 @@ public class ChatHudMixin {
             }
         }
 
-        while(this.visibleMessages.size() > 300) {
+        while(this.visibleMessages.size() > 500) {
             this.visibleMessages.remove(this.visibleMessages.size() - 1);
         }
 
         if (!bl) {
             this.messages.add(0, new ChatHudLine(timestamp, message, messageId));
 
-            while(this.messages.size() > 300) {
+            while(this.messages.size() > 500) {
                 this.messages.remove(this.messages.size() - 1);
             }
         }
