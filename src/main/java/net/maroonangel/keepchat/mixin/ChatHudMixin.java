@@ -6,7 +6,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.gui.screen.TitleScreen;
+import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.ChatMessages;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -107,6 +109,8 @@ public class ChatHudMixin {
 
         if (!bl) {
             this.messages.add(0, new ChatHudLine(timestamp, message, messageId));
+            if (message.getString().contains("whispers to you: "))
+                client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.ENTITY_ARROW_HIT_PLAYER, 0.8f, 0.4f));
 
             while(this.messages.size() > 500) {
                 this.messages.remove(this.messages.size() - 1);
