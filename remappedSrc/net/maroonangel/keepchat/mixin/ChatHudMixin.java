@@ -2,11 +2,18 @@ package net.maroonangel.keepchat.mixin;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.sun.org.apache.xpath.internal.operations.Or;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.ChatHudLine;
+import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.TitleScreen;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.ChatMessages;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -23,6 +30,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
+
+import static net.minecraft.client.gui.DrawableHelper.fill;
 
 @Mixin(ChatHud.class)
 public class ChatHudMixin {
@@ -68,10 +77,39 @@ public class ChatHudMixin {
     @Shadow
     private long lastMessageAddedTime;
 
+    @Shadow
+    public void addToMessageHistory(String message) {}
+
+    @Shadow
+    public boolean isChatHidden() {
+        return true;
+    }
+
+    @Shadow
+    private void processMessageQueue() {}
+
+    @Shadow
+    private int getVisibleLineCount() {
+        return 0;
+    }
+
+    private List<ChatHudLine<Text>> textMessages;
+
+    @Shadow
+    private static double getMessageOpacityMultiplier(int x) {
+        return 0.0D;
+    }
+
+
     @Overwrite
     public void clear(boolean clearHistory) {
-        if (this.messageHistory.size() > 0 && !this.messageHistory.get(this.messageHistory.size() - 1).equals("=================="))
-            this.addMessage(new TranslatableText("=================="));
+        if (this.messageHistory.size() > 0) {
+            System.out.println(this.messageHistory.get(this.messageHistory.size() - 1));
+            if (!this.messageHistory.get(this.messageHistory.size() - 1).equals("==================")) {
+                this.addMessage(new TranslatableText("=================="));
+                this.addToMessageHistory("==================");
+            }
+        }
     }
 
     @Overwrite
@@ -93,18 +131,22 @@ public class ChatHudMixin {
             }
         }
 
-        while(this.visibleMessages.size() > 300) {
+        while(this.visibleMessages.size() > 500) {
             this.visibleMessages.remove(this.visibleMessages.size() - 1);
         }
 
         if (!bl) {
             this.messages.add(0, new ChatHudLine(timestamp, message, messageId));
+            if (message.getString().contains("whispers to you: "))
+                client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.ENTITY_ARROW_HIT_PLAYER, 0.8f, 0.4f));
 
-            while(this.messages.size() > 300) {
+            while(this.messages.size() > 500) {
                 this.messages.remove(this.messages.size() - 1);
             }
         }
 
     }
+    
+
 
 }
