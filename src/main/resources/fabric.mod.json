@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "KeepChat",
-  "description": "Just a small chat modification.",
+  "description": "Chat mod that extends chat history and keeps it on rejoining server.",
   "authors": [
     "MaroonAngel"
   ],
@@ -27,11 +27,9 @@
   ],
 
   "depends": {
-    "fabricloader": ">=0.11.3",
+    "fabricloader": ">=0.14.6",
     "fabric": "*",
-    "minecraft": "1.18.x"
-  },
-  "suggests": {
-    "flamingo": "*"
+    "minecraft": "1.19.x",
+    "java": ">=17"
   }
 }

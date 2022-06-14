@@ -2,35 +2,24 @@ package net.maroonangel.keepchat.mixin;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.ChatHudLine;
-import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.gui.screen.TitleScreen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.ChatMessages;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.OrderedText;
+import net.minecraft.text.LiteralTextContent;
+//import net.minecraft.class_2588;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.OrderedText;
 import net.minecraft.util.math.MathHelper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
-
-import static net.minecraft.client.gui.DrawableHelper.fill;
 
 @Mixin(ChatHud.class)
 public class ChatHudMixin {
@@ -39,7 +28,7 @@ public class ChatHudMixin {
     public void addMessage(Text message) {}
 
     @Shadow
-    public void scroll(double amount) {}
+    public void scroll(int scroll) {}
 
     @Shadow
     private void removeMessage(int messageId) {}
@@ -100,16 +89,20 @@ public class ChatHudMixin {
     }
 
 
+
     @Overwrite
     public void clear(boolean clearHistory) {
+        /*
         if (this.messageHistory.size() > 0) {
             System.out.println(this.messageHistory.get(this.messageHistory.size() - 1));
             if (!this.messageHistory.get(this.messageHistory.size() - 1).equals("==================")) {
-                this.addMessage(new TranslatableText("=================="));
+                this.addMessage(new OrderedText(new LiteralTextContent("==================")));
                 this.addToMessageHistory("==================");
             }
         }
+         */
     }
+
 
     @Overwrite
     private void addMessage(Text message, int messageId, int timestamp, boolean bl) {
@@ -126,7 +119,7 @@ public class ChatHudMixin {
             orderedText = (OrderedText)var8.next();
             if (bl2 && this.scrolledLines > 0) {
                 this.hasUnreadNewMessages = true;
-                this.scroll(1.0D);
+                this.scroll(1);
             }
         }
 
@@ -143,9 +136,5 @@ public class ChatHudMixin {
                 this.messages.remove(this.messages.size() - 1);
             }
         }
-
     }
-    
-
-
 }
